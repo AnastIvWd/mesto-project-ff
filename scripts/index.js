@@ -1,18 +1,5 @@
-// @todo: Темплейт карточки
-const placesCards = document.querySelector('.places');
-const placesList = placesCards.querySelector('.places__list');
+const placesList = document.querySelector('.places__list');
 const cardTemplate = document.querySelector('#card-template').content;
-/* <template id="card-template">
-  <li class="places__item card">
-    <img class="card__image" src="" alt="" />
-    <button type="button" class="card__delete-button"></button>
-    <div class="card__description">
-      <h2 class="card__title">
-      </h2>
-      <button type="button" class="card__like-button"></button>
-    </div>
-  </li>
-</template> */
 
 // @todo: Функция создания карточки
 function addCard(item, deleteCard) {
