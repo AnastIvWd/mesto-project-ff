@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import {initialCards} from './cards';
 import {createCard, handleLike, deleteCard} from './card';
-import {openModal, closeModal, handelEscKeydown, handleModalClose} from './modal';
+import {openModal, closeModal, handleModalClose} from './modal';
 
 const placesList = document.querySelector('.places__list');
 const editProfileButton = document.querySelector('.profile__edit-button');
@@ -14,13 +14,15 @@ const jobInput = profileFormElement.querySelector('.popup__input_type_descriptio
 const addCardButton = document.querySelector('.profile__add-button'); 
 const addCardModal = document.querySelector('.popup_type_new-card');
 const cardModalImage = document.querySelector('.popup_type_image');
+const modalImage = cardModalImage.querySelector('.popup__image');
+const modalCaptions = cardModalImage.querySelector('.popup__caption');
 const cardFormElement = addCardModal.querySelector('.popup__form');
 const cardName = cardFormElement.querySelector('.popup__input_type_card-name');
 const cardImageUrl = cardFormElement.querySelector('.popup__input_type_url');
 
 // Вывести карточки на страницу
 function renderCard(item) {
-  placesList.prepend(createCard(item, deleteCard, openCardModalImage, handleLike));
+  placesList.prepend(createCard({item, deleteCard, openCardModalImage, handleLike}));
 }
 
 initialCards.forEach((item) => {
@@ -30,12 +32,8 @@ initialCards.forEach((item) => {
 // модалка редактирования профиля - открытие
 editProfileButton.addEventListener('click', () => {
   openModal(editProfileModal);
-  const textNameInput = profileTitle.textContent;
-  const textJobInput = profileDescription.textContent;
-
-  nameInput.value = textNameInput;
-  jobInput.value = textJobInput;
-  document.addEventListener('keydown', handelEscKeydown);
+  nameInput.value = profileTitle.textContent;
+  jobInput.value = profileDescription.textContent;
 });
 
 // модалка редактирования профиля - закрытие
@@ -50,7 +48,6 @@ function handleProfileEdit(evt) {
   profileTitle.textContent = nameInputValue;
   profileDescription.textContent = jobInputValue;
   closeModal(editProfileModal);
-  document.removeEventListener('keydown', handelEscKeydown);
 }
 
 profileFormElement.addEventListener('submit', handleProfileEdit);
@@ -58,7 +55,6 @@ profileFormElement.addEventListener('submit', handleProfileEdit);
 // модалка добавления карточек - открытие
 addCardButton.addEventListener('click', () => {
   openModal(addCardModal);
-  document.addEventListener('keydown', handelEscKeydown);
 });
 
 // модалка добавления карточек - закрытие
@@ -72,24 +68,17 @@ function handleCardAppend(evt) {
 
   cardName.value = '';
   cardImageUrl.value = '';
-
-  document.removeEventListener('keydown', handelEscKeydown);
 }
 
 cardFormElement.addEventListener('submit', handleCardAppend);
 
 // Функция открытия модалки img
 function openCardModalImage(evt) {
-  const modalImage = cardModalImage.querySelector('.popup__image');
-  const modalCaptions = cardModalImage.querySelector('.popup__caption');
-
   modalImage.setAttribute('src', evt.target.src);
   modalImage.setAttribute('alt', evt.target.alt);
   modalCaptions.textContent = evt.target.alt;
   
   openModal(cardModalImage);
-
-  document.addEventListener('keydown', handelEscKeydown);
 }
 
 // Закрытие модалки img

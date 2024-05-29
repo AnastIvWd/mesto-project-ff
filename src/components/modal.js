@@ -1,11 +1,13 @@
 // функция открытия модалки
 export function openModal (modal) {
   modal.classList.add('popup_is-opened');
+  document.addEventListener('keydown', handelEscKeydown);
 }
 
 //функция закрытия модалки
 export function closeModal (modal) {
   modal.classList.remove('popup_is-opened');
+  document.removeEventListener('keydown', handelEscKeydown);
 }
 
 // закрытие на esc
@@ -23,8 +25,7 @@ export function handleModalClose(evt) {
   const isOverlay = !evt.target.closest('.popup__content');
 
   if (isCloseButton || isOverlay) {
-    const openedModal = document.querySelector('.popup_is-opened');
-    closeModal(openedModal);
+    closeModal(evt.currentTarget);
     document.removeEventListener('keydown', handelEscKeydown);
   }
 }
