@@ -1,5 +1,4 @@
 import '../pages/index.css';
-// import {initialCards} from './cards';
 import {createCard, handleLike, deleteCard} from './card';
 import {openModal, closeModal, handleModalClose, changeModalState} from './modal';
 import {enableValidation, clearValidation} from './validation';

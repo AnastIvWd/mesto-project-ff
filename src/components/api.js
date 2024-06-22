@@ -1,5 +1,3 @@
-import { data } from "autoprefixer";
-
 //Загрузка карточек с сервера
 const config = {
   baseUrl: 'https://mesto.nomoreparties.co/v1/wff-cohort-16',
