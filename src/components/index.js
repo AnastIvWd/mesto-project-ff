@@ -1,7 +1,10 @@
 import '../pages/index.css';
-import {initialCards} from './cards';
+// import {initialCards} from './cards';
 import {createCard, handleLike, deleteCard} from './card';
-import {openModal, closeModal, handleModalClose} from './modal';
+import {openModal, closeModal, handleModalClose, changeModalState} from './modal';
+import {enableValidation, clearValidation} from './validation';
+import {configValidation} from './configvalidation';
+import {getInitialData, editProfileInformation, addNewCard, changeAvatar} from './api';
 
 const placesList = document.querySelector('.places__list');
 const editProfileButton = document.querySelector('.profile__edit-button');
@@ -19,21 +22,37 @@ const modalCaptions = cardModalImage.querySelector('.popup__caption');
 const cardFormElement = addCardModal.querySelector('.popup__form');
 const cardName = cardFormElement.querySelector('.popup__input_type_card-name');
 const cardImageUrl = cardFormElement.querySelector('.popup__input_type_url');
+const profileImage = document.querySelector('.profile__image');
+const editAvatarModal = document.querySelector('.popup_type_avatar');
+const editAvatarElement = editAvatarModal.querySelector('.popup__form')
+const editProfilAvatarButton = document.querySelector('.avatar__edit-button');
+const avatarUrl = editAvatarModal.querySelector('.popup__input_type_url');
+
+//добавляет карточки и начальные данные
+getInitialData().then(({cards, user}) => {
+  cards.forEach((item) => {
+    renderCard(item, user);
+  });
+  profileTitle.textContent = user.name;
+  profileDescription.textContent = user.about;
+  profileImage.style = `background-image: url("${user.avatar}")`;
+})
+
+// валидация форм
+enableValidation(configValidation);
 
 // Вывести карточки на страницу
-function renderCard(item) {
-  placesList.prepend(createCard({item, deleteCard, openCardModalImage, handleLike}));
+function renderCard(item, user) {
+  placesList.prepend(createCard({item, deleteCard, openCardModalImage, handleLike, user}));
 }
-
-initialCards.forEach((item) => {
-  renderCard(item);
-});
 
 // модалка редактирования профиля - открытие
 editProfileButton.addEventListener('click', () => {
   openModal(editProfileModal);
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDescription.textContent;
+
+  clearValidation(configValidation, profileFormElement);
 });
 
 // модалка редактирования профиля - закрытие
@@ -44,17 +63,49 @@ function handleProfileEdit(evt) {
   evt.preventDefault();
   const nameInputValue = nameInput.value;
   const jobInputValue = jobInput.value;
-  
-  profileTitle.textContent = nameInputValue;
-  profileDescription.textContent = jobInputValue;
-  closeModal(editProfileModal);
+  changeModalState(profileFormElement, true)
+
+  editProfileInformation(nameInputValue, jobInputValue).then(user => {
+    profileTitle.textContent = user.name;
+    profileDescription.textContent = user.about;
+    closeModal(editProfileModal);
+  })
 }
 
 profileFormElement.addEventListener('submit', handleProfileEdit);
 
+//модалка изменения аватара - открытие
+editProfilAvatarButton.addEventListener('click', () => {
+  openModal(editAvatarModal);
+  avatarUrl.value = '';
+
+  clearValidation(configValidation, editAvatarElement);
+});
+
+//модалка изменения аватара - изменение
+const handleAvatarEdit = (evt) => {
+  evt.preventDefault();
+  const newImage = avatarUrl.value
+  changeModalState(editAvatarModal, true)
+
+  changeAvatar(newImage).then((user) => {
+    profileImage.style = `background-image: url("${user.avatar}")`;
+    closeModal(editAvatarModal)
+  })
+}
+
+editAvatarElement.addEventListener('submit', handleAvatarEdit)
+
+//модалка изменения аватара - закрытие
+editAvatarModal.addEventListener('click', handleModalClose)
+
 // модалка добавления карточек - открытие
 addCardButton.addEventListener('click', () => {
   openModal(addCardModal);
+  cardName.value = '';
+  cardImageUrl.value = '';
+
+  clearValidation(configValidation, cardFormElement);
 });
 
 // модалка добавления карточек - закрытие
@@ -63,11 +114,12 @@ addCardModal.addEventListener('click', handleModalClose);
 // добавление новой карточки
 function handleCardAppend(evt) {
   evt.preventDefault();
-  renderCard({name: cardName.value, link: cardImageUrl.value})
-  closeModal(addCardModal);
+  changeModalState(addCardModal, true)
 
-  cardName.value = '';
-  cardImageUrl.value = '';
+  addNewCard(cardName.value, cardImageUrl.value).then(card => {
+    renderCard(card, true)
+    closeModal(addCardModal);
+  })
 }
 
 cardFormElement.addEventListener('submit', handleCardAppend);

@@ -7,7 +7,18 @@ export function openModal (modal) {
 //функция закрытия модалки
 export function closeModal (modal) {
   modal.classList.remove('popup_is-opened');
+  changeModalState(modal, false);
   document.removeEventListener('keydown', handelEscKeydown);
+}
+
+export function changeModalState(form, isUploading) {
+  const submitButtun = form.querySelector('.popup__button');
+
+  if (isUploading) {
+    submitButtun.textContent = 'Сохранение...';
+  } else {
+    submitButtun.textContent = 'Сохранить';
+  }
 }
 
 // закрытие на esc

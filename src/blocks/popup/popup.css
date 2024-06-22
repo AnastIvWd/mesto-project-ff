@@ -21,3 +21,19 @@
   right: 0;
   z-index: 10;
 }
+
+.form__input_type_error {
+  border-bottom: 1px solid #FF0000;
+}
+
+span { 
+  display: block;
+}
+
+.form__input_type_error-active {
+  color: #FF0000;
+  font-family: 'Inter';
+  font-size: 12px;
+  position: absolute;
+  transform: translateY(-5px);
+}
