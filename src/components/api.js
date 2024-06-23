@@ -7,26 +7,28 @@ const config = {
   }
 }
 
+const handleResponse = (data) => {
+  if(data.ok) {
+    return data.json()
+  }
+  return Promise.reject(`Запрос: ${data.status}`);
+}
+
+const getInitialCards = () => {
+  return fetch(`${config.baseUrl}/cards`, {headers: config.headers})
+  .then(handleResponse)
+}
+
+const getIProfile = () => {
+  return fetch(`${config.baseUrl}/users/me`, {headers: config.headers})
+  .then(handleResponse)
+}
+
 // получаем карточки и начальные данные
-export const getInitialData = () => {
-  return Promise.all([
-    fetch(`${config.baseUrl}/cards`, {headers: config.headers}),
-    fetch(`${config.baseUrl}/users/me`, {headers: config.headers})  
-  ])
-    .then(([data1, data2]) => {
-      if(data1.ok && data2.ok) {
-        return Promise.all([
-          data1.json(),
-          data2.json()
-        ])
-      }
-      return Promise.reject(`Запрос 1: ${data1.status} Запрос 2: ${data2.status}`);
-    })
-    .then(([cards, user]) => {
-      return {cards, user}
-    })
-    .catch(err => {
-      console.error(err)
+export const getInitialData = () => { 
+  return Promise.all([getInitialCards(), getIProfile()])
+  .then(([cards, user]) => { 
+      return {cards, user} 
     })
 }
 
@@ -40,15 +42,7 @@ export const editProfileInformation = (newName, newJob) => {
       about: newJob
     })
   })
-  .then ((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then (handleResponse)
 }
 
 //добавление новой карточки
@@ -61,15 +55,7 @@ export const addNewCard = (nameNewCard, linkNewCard) => {
       link: linkNewCard
     })
   })
-  .then((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then(handleResponse)
 }
 
 //Удаление карточки
@@ -78,15 +64,7 @@ export const deleteOneCard = (currentId) => {
     method: 'DELETE',
     headers: config.headers
   })
-  .then((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then(handleResponse)
 }
 
 //Поставить лайк
@@ -95,15 +73,7 @@ export const putLike = (cardId) => {
     method: 'PUT',
     headers: config.headers
   })
-  .then((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then(handleResponse)
 }
 
 //Убрать лайк
@@ -112,15 +82,7 @@ export const deleteLike = (cardId) => {
     method: 'DELETE',
     headers: config.headers
   })
-  .then((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then(handleResponse)
 }
 
 //Изменение аватара профиля
@@ -132,13 +94,5 @@ export const changeAvatar = (newAvatar) => {
       avatar: newAvatar
     })
   })
-  .then((data) => {
-    if(data.ok) {
-      return data.json()
-    }
-    return Promise.reject(`Запрос: ${data.status}`);
-  })
-  .catch(err => {
-    console.error(err)
-  })
+  .then(handleResponse)
 }

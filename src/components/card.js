@@ -10,7 +10,7 @@ export function createCard({item, deleteCard, openCardModalImage, handleLike, us
   const likeButton = placesItem.querySelector('.card__like-button');
   const sumLikes = placesItem.querySelector('.number-likes');
   let likes = item.likes;
-  const hasLike = likes.find((item) => item._id === user._id)
+  const hasLike = likes.some((item) => item._id === user._id)
 
   cardImage.setAttribute('src', item.link);
   cardImage.setAttribute('alt', item.name);
@@ -18,29 +18,17 @@ export function createCard({item, deleteCard, openCardModalImage, handleLike, us
   sumLikes.textContent = item.likes.length;
 
   cardImage.addEventListener('click', openCardModalImage);
-  likeButton.addEventListener('click', (evt) => {
-    const isActive = evt.target.classList.contains('card__like-button_is-active')
-    if(isActive) {
-      deleteLike(item._id).then((card) => {
-        sumLikes.textContent = card.likes.length;
-        likes = card.likes
-        handleLike(evt)
-      })
-    } else {
-      putLike(item._id).then((card) => {
-        sumLikes.textContent = card.likes.length;
-        likes = card.likes
-        handleLike(evt)
-      });
-    }
-  });
+  likeButton.addEventListener('click', (evt) => handleLike(evt, item._id));
 
   if (item.owner._id === user._id) {
     const deleteButton = document.createElement('button');
     deleteButton.setAttribute('class', 'card__delete-button');
     deleteButton.addEventListener('click', (evt) => {
-      deleteCard(evt)
       deleteOneCard(item._id)
+      .catch(err => {
+        console.error(err)
+      })
+      deleteCard(evt)
     });
     placesItem.appendChild(deleteButton);
   }
@@ -52,8 +40,20 @@ export function createCard({item, deleteCard, openCardModalImage, handleLike, us
 }
 
 // Функция нажатия на лайк
-export function handleLike(evt) {
-  evt.target.classList.toggle('card__like-button_is-active');
+export function handleLike(evt, cardId) {
+  const cardDesc = evt.target.closest('.card__description')
+  const isActive = evt.target.classList.contains('card__like-button_is-active')
+  const sumLikes = cardDesc.querySelector('.number-likes');
+  const likeMethod = isActive ? deleteLike : putLike;
+
+  likeMethod(cardId)
+    .then((card) => {
+      sumLikes.textContent = card.likes.length;
+      evt.target.classList.toggle('card__like-button_is-active');
+    })
+    .catch(err => {
+      console.error(err)
+    })
 }
 
 // Функция удаления карточки

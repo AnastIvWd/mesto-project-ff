@@ -7,18 +7,13 @@ export function openModal (modal) {
 //функция закрытия модалки
 export function closeModal (modal) {
   modal.classList.remove('popup_is-opened');
-  changeModalState(modal, false);
   document.removeEventListener('keydown', handelEscKeydown);
 }
 
 export function changeModalState(form, isUploading) {
   const submitButtun = form.querySelector('.popup__button');
 
-  if (isUploading) {
-    submitButtun.textContent = 'Сохранение...';
-  } else {
-    submitButtun.textContent = 'Сохранить';
-  }
+  submitButtun.textContent = isUploading ? 'Сохранение...' : 'Сохранить';
 }
 
 // закрытие на esc
@@ -26,7 +21,6 @@ export function handelEscKeydown(evt) {
   if (evt.key === 'Escape') { 
     const openedModal = document.querySelector('.popup_is-opened'); 
     closeModal(openedModal);
-    document.removeEventListener('keydown', handelEscKeydown);
   }
 }
 
@@ -37,6 +31,5 @@ export function handleModalClose(evt) {
 
   if (isCloseButton || isOverlay) {
     closeModal(evt.currentTarget);
-    document.removeEventListener('keydown', handelEscKeydown);
   }
 }

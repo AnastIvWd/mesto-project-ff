@@ -73,6 +73,8 @@ export const enableValidation = (validationConfig) => {
 // очистка формы от сообщений об ошибках
 export const clearValidation = (validationConfig, formElement) => {
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
+  const submitButtun = formElement.querySelector('.popup__button');
+  submitButtun.disabled = true;
 
   inputList.forEach((inputElement) => {
     hideInputError(validationConfig, formElement, inputElement);

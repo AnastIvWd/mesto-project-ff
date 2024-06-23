@@ -28,14 +28,18 @@ const editProfilAvatarButton = document.querySelector('.avatar__edit-button');
 const avatarUrl = editAvatarModal.querySelector('.popup__input_type_url');
 
 //добавляет карточки и начальные данные
-getInitialData().then(({cards, user}) => {
-  cards.forEach((item) => {
-    renderCard(item, user);
+getInitialData()
+  .then(({cards, user}) => {
+    cards.forEach((item) => {
+      renderCard(item, user);
+    })
+    profileTitle.textContent = user.name;
+    profileDescription.textContent = user.about;
+    profileImage.style = `background-image: url("${user.avatar}")`;
+  })
+  .catch(err => {
+    console.error(err)
   });
-  profileTitle.textContent = user.name;
-  profileDescription.textContent = user.about;
-  profileImage.style = `background-image: url("${user.avatar}")`;
-})
 
 // валидация форм
 enableValidation(configValidation);
@@ -64,11 +68,18 @@ function handleProfileEdit(evt) {
   const jobInputValue = jobInput.value;
   changeModalState(profileFormElement, true)
 
-  editProfileInformation(nameInputValue, jobInputValue).then(user => {
-    profileTitle.textContent = user.name;
-    profileDescription.textContent = user.about;
-    closeModal(editProfileModal);
-  })
+  editProfileInformation(nameInputValue, jobInputValue)
+    .then(user => {
+      profileTitle.textContent = user.name;
+      profileDescription.textContent = user.about;
+      closeModal(editProfileModal);
+    })
+    .catch(err => {
+      console.error(err)
+    })
+    .finally(() => {
+      changeModalState(profileFormElement, false)
+    })
 }
 
 profileFormElement.addEventListener('submit', handleProfileEdit);
@@ -87,10 +98,17 @@ const handleAvatarEdit = (evt) => {
   const newImage = avatarUrl.value
   changeModalState(editAvatarModal, true)
 
-  changeAvatar(newImage).then((user) => {
-    profileImage.style = `background-image: url("${user.avatar}")`;
-    closeModal(editAvatarModal)
-  })
+  changeAvatar(newImage)
+    .then((user) => {
+      profileImage.style = `background-image: url("${user.avatar}")`;
+      closeModal(editAvatarModal)
+    })
+    .catch(err => {
+    console.error(err)
+    })
+    .finally(() => {
+      changeModalState(editAvatarModal, false)
+    })
 }
 
 editAvatarElement.addEventListener('submit', handleAvatarEdit)
@@ -115,10 +133,17 @@ function handleCardAppend(evt) {
   evt.preventDefault();
   changeModalState(addCardModal, true)
 
-  addNewCard(cardName.value, cardImageUrl.value).then(card => {
-    renderCard(card, true)
-    closeModal(addCardModal);
-  })
+  addNewCard(cardName.value, cardImageUrl.value)
+    .then(card => {
+      renderCard(card, true)
+      closeModal(addCardModal);
+    })
+    .catch(err => {
+      console.error(err)
+    })
+    .finally(() => {
+      changeModalState(addCardModal, false)
+    })
 }
 
 cardFormElement.addEventListener('submit', handleCardAppend);
