@@ -1,5 +1,5 @@
 import '../pages/index.css';
-import {createCard, handleLike, deleteCard} from './card';
+import {createCard} from './card';
 import {openModal, closeModal, handleModalClose, changeModalState} from './modal';
 import {enableValidation, clearValidation} from './validation';
 import {configValidation} from './configvalidation';
@@ -46,7 +46,7 @@ enableValidation(configValidation);
 
 // Вывести карточки на страницу
 function renderCard(item, user) {
-  placesList.prepend(createCard({item, deleteCard, openCardModalImage, handleLike, user}));
+  placesList.prepend(createCard({item, openCardModalImage, user}));
 }
 
 // модалка редактирования профиля - открытие
@@ -104,7 +104,7 @@ const handleAvatarEdit = (evt) => {
       closeModal(editAvatarModal)
     })
     .catch(err => {
-    console.error(err)
+      console.error(err)
     })
     .finally(() => {
       changeModalState(editAvatarModal, false)
@@ -135,7 +135,7 @@ function handleCardAppend(evt) {
 
   addNewCard(cardName.value, cardImageUrl.value)
     .then(card => {
-      renderCard(card, true)
+      renderCard(card, card.owner)
       closeModal(addCardModal);
     })
     .catch(err => {

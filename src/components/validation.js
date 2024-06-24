@@ -49,12 +49,16 @@ const hasInvalidInput = (inputList) => {
     return !inputElement.validity.valid;
   })
 };
+
+const disableSubmitButton = (buttonElement, className) => {
+  buttonElement.disabled = true;
+  buttonElement.classList.add(className);
+}
   
 // меняет состояние кнопки
 const toggleButtonState = (validationConfig, inputList, buttonElement) => {
   if (hasInvalidInput(inputList)) {
-    buttonElement.disabled = true;
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
+    disableSubmitButton(buttonElement, validationConfig.inactiveButtonClass);
   } else {
     buttonElement.disabled = false;
     buttonElement.classList.remove(validationConfig.inactiveButtonClass);
@@ -74,7 +78,7 @@ export const enableValidation = (validationConfig) => {
 export const clearValidation = (validationConfig, formElement) => {
   const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
   const submitButtun = formElement.querySelector('.popup__button');
-  submitButtun.disabled = true;
+  disableSubmitButton(submitButtun, validationConfig.inactiveButtonClass);
 
   inputList.forEach((inputElement) => {
     hideInputError(validationConfig, formElement, inputElement);
